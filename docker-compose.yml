@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+
+  springboot-microservice-management:
+    build:
+      context: ./springboot-microservice-management
+    image: springboot-microservice-management-img
+    container_name: springboot-microservice-management-api
+    ports:
+      - "8091:8080"
+    networks:
+      - mysqlnetwork
+
+  springboot-microservice-transactions:
+    build:
+      context: ./springboot-microservice-transactions
+    image: springboot-microservice-transactions-img
+    container_name: springboot-microservice-transactions-api
+    ports:
+      - "8092:8080"
+    networks:
+      - mysqlnetwork
+
+  springboot-microservice-billing:
+    build:
+      context: ./springboot-microservice-billing
+    image: springboot-microservice-billing-img
+    container_name: springboot-microservice-billing-api
+    ports:
+      - "8093:8080"
+    networks:
+      - mysqlnetwork
+      
+  springboot-microservice-dispute:
+    build:
+      context: ./springboot-microservice-dispute
+    image: springboot-microservice-dispute-img
+    container_name: springboot-microservice-dispute-api
+    ports:
+      - "8094:8080"
+    networks:
+      - mysqlnetwork
+      
+networks:
+  mysqlnetwork:
+    external: true  # 使用外部已存在的網路
