@@ -7,16 +7,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ntou.connections.OkHttpServiceClient;
 import com.ntou.tool.Common;
 import com.ntou.tool.JsonTool;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Log4j2
+@Service
+@NoArgsConstructor
 public class DbApiSenderBillofmonth {
-    private static final String DB_SERVICE_URL = "http://springboot-microservice-jpa-billofmonth-api:8080/springboot-microservice-jpa/billofmonth/";
+    @Value("${jpa.service.url.billofmonth}")
+    private String dbServiceUrl;
 
-    public static List<BillofmonthVO> findCusBill(OkHttpServiceClient svc, BillofmonthVO vo) throws JsonProcessingException {
-        String str = svc.getService(DB_SERVICE_URL
+    public List<BillofmonthVO> findCusBill(OkHttpServiceClient svc, BillofmonthVO vo) throws JsonProcessingException {
+        String str = svc.getService(dbServiceUrl
                 + "FindCusBill?cid=" + vo.getCid() + "&cardType=" + vo.getCardType() + "payDate" + vo.getPayDate());
         log.info(Common.RESULT + str);
         JsonNode nodeReadTree = JsonTool.readTree(str);
@@ -27,16 +33,16 @@ public class DbApiSenderBillofmonth {
         log.info(Common.NODE_RESULT + output);
         return output;
     }
-    public static String insertBill(OkHttpServiceClient svc, BillofmonthVO vo) throws JsonProcessingException {
-        String str = svc.postService(DB_SERVICE_URL + "InsertBill", vo);
+    public String insertBill(OkHttpServiceClient svc, BillofmonthVO vo) throws JsonProcessingException {
+        String str = svc.postService(dbServiceUrl + "InsertBill", vo);
         log.info(Common.RESULT + str);
         JsonNode nodeUpdateResult = JsonTool.readTree(str);
         String output = nodeUpdateResult.get("resCode").asText();
         log.info(Common.NODE_RESULT + output);
         return output;
     }
-    public static String updatePayDate(OkHttpServiceClient svc, BillofmonthVO vo) throws JsonProcessingException {
-        String str = svc.putService(DB_SERVICE_URL + "UpdatePayDate", vo);
+    public String updatePayDate(OkHttpServiceClient svc, BillofmonthVO vo) throws JsonProcessingException {
+        String str = svc.putService(dbServiceUrl + "UpdatePayDate", vo);
         log.info(Common.RESULT + str);
         JsonNode nodeUpdateResult = JsonTool.readTree(str);
         String output = nodeUpdateResult.get("resCode").asText();

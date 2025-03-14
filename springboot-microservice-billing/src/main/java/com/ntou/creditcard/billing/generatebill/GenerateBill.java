@@ -12,10 +12,10 @@ import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
 import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -24,16 +24,16 @@ import java.util.stream.Collectors;
 
 /** 結信用卡費：該月1日至月底之交易金額 */
 @Log4j2
-@NoArgsConstructor
+@Service
 public class GenerateBill {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
 
-    public ResponseEntity<GenerateBillRes> doAPI() throws Exception {
+    public ResponseEntity<GenerateBillRes> doAPI(DbApiSenderBillofmonth dbApiSenderBillofmonth,DbApiSenderBillrecord dbApiSendeBillrecord,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         GenerateBillRes res = new GenerateBillRes();
 
 //      1. 到資料庫找到要寄送帳單的所有客
-        List<BillrecordVO> billList = DbApiSenderBillrecord.FindCusBill(okHttpServiceClient);
+        List<BillrecordVO> billList = dbApiSendeBillrecord.FindCusBill(okHttpServiceClient);
 //      2. 整理,將資料以卡身分證和卡別分組
         Map<String, List<BillrecordVO>> groupedData = billList.stream()
                 .collect(Collectors.groupingBy(t -> t.getCid() + t.getCardType()));
@@ -45,7 +45,7 @@ public class GenerateBill {
             List<BillrecordVO> value = entry.getValue();
             String cid = key.substring(0, 10);
             String cardType = key.substring(10, 11);
-            CuscreditVO voCuscredit = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, cid, cardType);
+            CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, cid, cardType);
             if(voCuscredit != null) {
                 vo.setEmailAddr(voCuscredit.getEmail());
                 vo.setSubject(cid + "卡別" + cardType + "的" + yyyymm + "月信用卡帳單");
@@ -66,11 +66,11 @@ public class GenerateBill {
                 new JavaMail().sendMail(vo);
 
                 BillofmonthVO voBillofmonth = setBillofmonthVO(cid, cardType, value, String.valueOf(amt), yyyymm);
-                List<BillofmonthVO> bills = DbApiSenderBillofmonth.findCusBill(okHttpServiceClient, voBillofmonth);
+                List<BillofmonthVO> bills = dbApiSenderBillofmonth.findCusBill(okHttpServiceClient, voBillofmonth);
                 if (bills != null)
                     ResTool.commonThrow(res, GenerateBillRC.T151C.getCode(), GenerateBillRC.T151C.getContent());
 
-                String insertResult = DbApiSenderBillofmonth.insertBill(okHttpServiceClient, voBillofmonth);
+                String insertResult = dbApiSenderBillofmonth.insertBill(okHttpServiceClient, voBillofmonth);
                 if (!insertResult.equals("InsertBill00"))
                     ResTool.commonThrow(res, GenerateBillRC.T141D.getCode(), GenerateBillRC.T141D.getContent());
             }

@@ -8,18 +8,16 @@ import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
 import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /** 申請信用卡 */
 @Log4j2
-@NoArgsConstructor
 public class Application {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
 
-    public ResponseEntity<ApplicationRes> doAPI(ApplicationReq req) throws Exception {
+    public ResponseEntity<ApplicationRes> doAPI(ApplicationReq req,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         ApplicationRes res = new ApplicationRes();
@@ -27,11 +25,11 @@ public class Application {
         if(!req.checkReq())
             ResTool.regularThrow(res, ApplicationRC.T111A.getCode(), ApplicationRC.T111A.getContent(), req.getErrMsg());
 
-        CuscreditVO resCodeGetCardHolder = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
+        CuscreditVO resCodeGetCardHolder = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
         if(resCodeGetCardHolder != null)
             ResTool.commonThrow(res, ApplicationRC.T111D.getCode(), ApplicationRC.T111D.getContent());
 
-        String resCode = DbApiSenderCuscredit.createCuscredit(okHttpServiceClient, voCuscreditInsert(req));
+        String resCode = dbApiSenderCuscredit.createCuscredit(okHttpServiceClient, voCuscreditInsert(req));
         if(!resCode.equals("CreateCuscredit00"))
             ResTool.commonThrow(res, ApplicationRC.T111C.getCode(), ApplicationRC.T111C.getContent());
 

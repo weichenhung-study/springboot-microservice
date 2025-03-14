@@ -20,7 +20,7 @@ import java.util.Random;
 public class Review {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
 
-    public ResponseEntity<ReviewRes> doAPI(ReviewReq req) throws Exception {
+    public ResponseEntity<ReviewRes> doAPI(ReviewReq req,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         ReviewRes res = new ReviewRes();
@@ -28,7 +28,7 @@ public class Review {
         if(!req.checkReq())
             ResTool.regularThrow(res, ReviewRC.T121A.getCode(), ReviewRC.T121A.getContent(), req.getErrMsg());
 
-        CuscreditVO voCuscredit = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
+        CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
 
         String cusMail = "";
         if(voCuscredit == null)
@@ -36,7 +36,7 @@ public class Review {
         else
             cusMail = voCuscredit.getEmail();
 
-        String updateCount = DbApiSenderCuscredit.updateCardApprovalStatus(okHttpServiceClient, voCuscreditUpdate(req));
+        String updateCount = dbApiSenderCuscredit.updateCardApprovalStatus(okHttpServiceClient, voCuscreditUpdate(req));
         if(!updateCount.equals("UpdateCardApprovalStatus00"))
             ResTool.commonThrow(res, ReviewRC.T121C.getCode(), ReviewRC.T121C.getContent());
 

@@ -10,7 +10,6 @@ import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
 import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,10 @@ import java.util.UUID;
 
 /** 使用信用卡購物 */
 @Log4j2
-@NoArgsConstructor
 public class Transaction {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
 
-    public ResponseEntity<TransactionRes> doAPI(TransactionReq req) throws Exception {
+    public ResponseEntity<TransactionRes> doAPI(TransactionReq req,DbApiSenderBillrecord dbApiSendeBillrecord,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         TransactionRes res = new TransactionRes();
@@ -31,11 +29,11 @@ public class Transaction {
         if(!req.checkReq())
             ResTool.regularThrow(res, TransactionRC.T141A.getCode(), TransactionRC.T141A.getContent(), req.getErrMsg());
 
-        CuscreditVO voCuscredit = DbApiSenderCuscredit.getActivatedCardHolder(okHttpServiceClient, req.getCid(), req.getCardType(), req.getCardNum(), req.getSecurityCode());
+        CuscreditVO voCuscredit = dbApiSenderCuscredit.getActivatedCardHolder(okHttpServiceClient, req.getCid(), req.getCardType(), req.getCardNum(), req.getSecurityCode());
         if(voCuscredit == null)//check客戶是否存在且開卡完成
             ResTool.commonThrow(res, TransactionRC.T141D.getCode(), TransactionRC.T141D.getContent());
 
-        String insertResult = DbApiSenderBillrecord.insertCusDateBill(okHttpServiceClient, voBillrecordInsert(req));
+        String insertResult = dbApiSendeBillrecord.insertCusDateBill(okHttpServiceClient, voBillrecordInsert(req));
         if(!insertResult.equals("InsertCusDateBill00"))
             ResTool.commonThrow(res, TransactionRC.T141C.getCode(), TransactionRC.T141C.getContent());
 

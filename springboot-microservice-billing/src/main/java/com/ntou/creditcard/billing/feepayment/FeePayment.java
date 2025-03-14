@@ -10,7 +10,6 @@ import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
 import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,10 @@ import java.util.List;
 
 /** 客戶繳交信用卡費 */
 @Log4j2
-@NoArgsConstructor
 public class FeePayment {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
 
-    public ResponseEntity<FeePaymentRes> doAPI(FeePaymentReq req) throws Exception {
+    public ResponseEntity<FeePaymentRes> doAPI(FeePaymentReq req, DbApiSenderBillofmonth dbApiSenderBillofmonth,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         FeePaymentRes res = new FeePaymentRes();
@@ -33,16 +31,16 @@ public class FeePayment {
 
         BillofmonthVO vo = setUpdatePayDate(req);
 //        ArrayList<BillofmonthVO> listBillofmonth = billofmonthSvc.findBills(vo);
-        List<BillofmonthVO> listBillofmonth = DbApiSenderBillofmonth.findCusBill(okHttpServiceClient, vo);
+        List<BillofmonthVO> listBillofmonth = dbApiSenderBillofmonth.findCusBill(okHttpServiceClient, vo);
         if (listBillofmonth != null && listBillofmonth.size() == 1) {
             int notPaidAmount = Integer.parseInt(listBillofmonth.get(0).getAmt()) - Integer.parseInt(req.getPayAmt());
             vo.setNotPaidAmount(String.valueOf(notPaidAmount));
 
 //            int updateCount = billofmonthSvc.updatePayDate(vo);
-            String updateCount = DbApiSenderBillofmonth.updatePayDate(okHttpServiceClient, vo);
+            String updateCount = dbApiSenderBillofmonth.updatePayDate(okHttpServiceClient, vo);
             if(!updateCount.equals("1"))
                 ResTool.commonThrow(res, FeePaymentRC.T171C.getCode(), FeePaymentRC.T171C.getContent());
-            sendMail(req, listBillofmonth.get(0));
+            sendMail(req, listBillofmonth.get(0),dbApiSenderCuscredit);
         } else
             ResTool.commonThrow(res, FeePaymentRC.T171D.getCode(), FeePaymentRC.T171D.getContent());
 
@@ -52,10 +50,9 @@ public class FeePayment {
         log.info(Common.API_DIVIDER + Common.END_B + Common.API_DIVIDER);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
-    private void sendMail(FeePaymentReq req, BillofmonthVO key) throws Exception {
+    private void sendMail(FeePaymentReq req, BillofmonthVO key,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
         MailVO vo = new MailVO();
-//        CuscreditVO voCuscredit = cuscreditSvc.selectKey(req.getCid(), req.getCardType());
-        CuscreditVO voCuscredit = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
+        CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
         vo.setEmailAddr(voCuscredit.getEmail());
         vo.setSubject("信用卡繳費通知");
         vo.setContent("<h1>收到您的信用卡費</h1>" +
