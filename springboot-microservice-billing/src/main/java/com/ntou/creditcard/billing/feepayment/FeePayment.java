@@ -68,7 +68,7 @@ public class FeePayment {
         BillofmonthVO vo = new BillofmonthVO();
         vo.setCid(req.getCid());
         vo.setCardType(req.getCardType());
-        vo.setPayDate(DateTool.getDateTime());
+        vo.setPayDate(req.getPayDate());
         vo.setPaidAmount(req.getPayAmt());
         vo.setBillMonth(req.getPayDate());
         return vo;

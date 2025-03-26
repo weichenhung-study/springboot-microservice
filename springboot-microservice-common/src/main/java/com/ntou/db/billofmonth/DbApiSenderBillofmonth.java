@@ -23,7 +23,7 @@ public class DbApiSenderBillofmonth {
 
     public List<BillofmonthVO> findCusBill(OkHttpServiceClient svc, BillofmonthVO vo) throws JsonProcessingException {
         String str = svc.getService(dbServiceUrl
-                + "FindCusBill?cid=" + vo.getCid() + "&cardType=" + vo.getCardType() + "payDate" + vo.getPayDate());
+                + "FindCusBill?cid=" + vo.getCid() + "&cardType=" + vo.getCardType() + "&payDate=" + vo.getPayDate());
         log.info(Common.RESULT + str);
         JsonNode nodeReadTree = JsonTool.readTree(str);
         JsonNode nodeResult = nodeReadTree.get("result");
