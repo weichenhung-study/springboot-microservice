@@ -35,10 +35,10 @@ public class FeePayment {
         if (listBillofmonth != null && listBillofmonth.size() == 1) {
             int notPaidAmount = Integer.parseInt(listBillofmonth.get(0).getAmt()) - Integer.parseInt(req.getPayAmt());
             vo.setNotPaidAmount(String.valueOf(notPaidAmount));
-
+            vo.setUuid(listBillofmonth.get(0).getUuid());
 //            int updateCount = billofmonthSvc.updatePayDate(vo);
             String updateCount = dbApiSenderBillofmonth.updatePayDate(okHttpServiceClient, vo);
-            if(!updateCount.equals("1"))
+            if(!updateCount.equals("InsertBill00"))
                 ResTool.commonThrow(res, FeePaymentRC.T171C.getCode(), FeePaymentRC.T171C.getContent());
             sendMail(req, listBillofmonth.get(0),dbApiSenderCuscredit);
         } else
@@ -69,7 +69,7 @@ public class FeePayment {
         vo.setCid(req.getCid());
         vo.setCardType(req.getCardType());
         vo.setPayDate(req.getPayDate());
-        vo.setPaidAmount(req.getPayAmt());
+        vo.setPayAmt(req.getPayAmt());
         vo.setBillMonth(req.getPayDate());
         return vo;
     }

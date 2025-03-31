@@ -23,6 +23,7 @@ public class BillofmonthVO {
     private String spaceCycleRate	="";//VARCHAR(100)	討論循環利率
     private String spaceAmt			="";//VARCHAR(255)	討論金額
     private String payDate          ="";//VARCHAR(23)	繳款時間yyyy/MM/dd HH:MM:ss.SSS
+    private String payAmt          ="";
 
     public static String encodeFormSQL(String s) {return s != null && !s.isEmpty() ? s : "";}
 
