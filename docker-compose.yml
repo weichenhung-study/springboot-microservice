@@ -12,21 +12,21 @@ services:
     networks:
       - mysqlnetwork
 
-  springboot-microservice-management-ap1:
+  springboot-microservice-management-instance1:
     build:
       context: ./springboot-microservice-management
-    image: springboot-microservice-management-ap1-img
-    container_name: springboot-microservice-management-ap1-api
+    image: springboot-microservice-management-instance1-img
+    container_name: springboot-microservice-management-instance1-api
     ports:
       - "8010:8080"
     networks:
       - mysqlnetwork
 
-  springboot-microservice-management-ap2:
+  springboot-microservice-management-instance2:
     build:
       context: ./springboot-microservice-management
-    image: springboot-microservice-management-ap2-img
-    container_name: springboot-microservice-management-ap2-api
+    image: springboot-microservice-management-instance2-img
+    container_name: springboot-microservice-management-instance2-api
     ports:
       - "8011:8080"
     networks:
@@ -43,21 +43,21 @@ services:
     networks:
       - mysqlnetwork
 
-  springboot-microservice-transactions-ap1:
+  springboot-microservice-transactions-instance1:
     build:
       context: ./springboot-microservice-transactions
-    image: springboot-microservice-transactions-ap1-img
-    container_name: springboot-microservice-transactions-ap1-api
+    image: springboot-microservice-transactions-instance1-img
+    container_name: springboot-microservice-transactions-instance1-api
     ports:
       - "8012:8080"
     networks:
       - mysqlnetwork
 
-  springboot-microservice-transactions-ap2:
+  springboot-microservice-transactions-instance2:
     build:
       context: ./springboot-microservice-transactions
-    image: springboot-microservice-transactions-ap2-img
-    container_name: springboot-microservice-transactions-ap2-api
+    image: springboot-microservice-transactions-instance2-img
+    container_name: springboot-microservice-transactions-instance2-api
     ports:
       - "8013:8080"
     networks:
@@ -74,21 +74,21 @@ services:
     networks:
       - mysqlnetwork
 
-  springboot-microservice-billing-ap1:
+  springboot-microservice-billing-instance1:
     build:
       context: ./springboot-microservice-billing
-    image: springboot-microservice-billing-ap1-img
-    container_name: springboot-microservice-billing-ap1-api
+    image: springboot-microservice-billing-instance1-img
+    container_name: springboot-microservice-billing-instance1-api
     ports:
       - "8014:8080"
     networks:
       - mysqlnetwork
 
-  springboot-microservice-billing-ap2:
+  springboot-microservice-billing-instance2:
     build:
       context: ./springboot-microservice-billing
-    image: springboot-microservice-billing-ap2-img
-    container_name: springboot-microservice-billing-ap2-api
+    image: springboot-microservice-billing-instance2-img
+    container_name: springboot-microservice-billing-instance2-api
     ports:
       - "8015:8080"
     networks:
@@ -105,21 +105,21 @@ services:
     networks:
       - mysqlnetwork
 
-  springboot-microservice-dispute-ap1:
+  springboot-microservice-dispute-instance1:
     build:
       context: ./springboot-microservice-dispute
-    image: springboot-microservice-dispute-ap1-img
-    container_name: springboot-microservice-dispute-ap1-api
+    image: springboot-microservice-dispute-instance1-img
+    container_name: springboot-microservice-dispute-instance1-api
     ports:
       - "8016:8080"
     networks:
       - mysqlnetwork
 
-  springboot-microservice-dispute-ap2:
+  springboot-microservice-dispute-instance2:
     build:
       context: ./springboot-microservice-dispute
-    image: springboot-microservice-dispute-ap2-img
-    container_name: springboot-microservice-dispute-ap2-api
+    image: springboot-microservice-dispute-instance2-img
+    container_name: springboot-microservice-dispute-instance2-api
     ports:
       - "8017:8080"
     networks:
