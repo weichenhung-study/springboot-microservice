@@ -12,26 +12,6 @@ services:
     networks:
       - mysqlnetwork
 
-  springboot-microservice-management-instance1:
-    build:
-      context: ./springboot-microservice-management
-    image: springboot-microservice-management-instance1-img
-    container_name: springboot-microservice-management-instance1-api
-    ports:
-      - "8010:8080"
-    networks:
-      - mysqlnetwork
-
-  springboot-microservice-management-instance2:
-    build:
-      context: ./springboot-microservice-management
-    image: springboot-microservice-management-instance2-img
-    container_name: springboot-microservice-management-instance2-api
-    ports:
-      - "8011:8080"
-    networks:
-      - mysqlnetwork
-
 ####################
   springboot-microservice-transactions:
     build:
@@ -40,26 +20,6 @@ services:
     container_name: springboot-microservice-transactions-api
     ports:
       - "8092:8080"
-    networks:
-      - mysqlnetwork
-
-  springboot-microservice-transactions-instance1:
-    build:
-      context: ./springboot-microservice-transactions
-    image: springboot-microservice-transactions-instance1-img
-    container_name: springboot-microservice-transactions-instance1-api
-    ports:
-      - "8012:8080"
-    networks:
-      - mysqlnetwork
-
-  springboot-microservice-transactions-instance2:
-    build:
-      context: ./springboot-microservice-transactions
-    image: springboot-microservice-transactions-instance2-img
-    container_name: springboot-microservice-transactions-instance2-api
-    ports:
-      - "8013:8080"
     networks:
       - mysqlnetwork
 
@@ -74,26 +34,6 @@ services:
     networks:
       - mysqlnetwork
 
-  springboot-microservice-billing-instance1:
-    build:
-      context: ./springboot-microservice-billing
-    image: springboot-microservice-billing-instance1-img
-    container_name: springboot-microservice-billing-instance1-api
-    ports:
-      - "8014:8080"
-    networks:
-      - mysqlnetwork
-
-  springboot-microservice-billing-instance2:
-    build:
-      context: ./springboot-microservice-billing
-    image: springboot-microservice-billing-instance2-img
-    container_name: springboot-microservice-billing-instance2-api
-    ports:
-      - "8015:8080"
-    networks:
-      - mysqlnetwork
-
 ####################
   springboot-microservice-dispute:
     build:
@@ -102,26 +42,6 @@ services:
     container_name: springboot-microservice-dispute-api
     ports:
       - "8094:8080"
-    networks:
-      - mysqlnetwork
-
-  springboot-microservice-dispute-instance1:
-    build:
-      context: ./springboot-microservice-dispute
-    image: springboot-microservice-dispute-instance1-img
-    container_name: springboot-microservice-dispute-instance1-api
-    ports:
-      - "8016:8080"
-    networks:
-      - mysqlnetwork
-
-  springboot-microservice-dispute-instance2:
-    build:
-      context: ./springboot-microservice-dispute
-    image: springboot-microservice-dispute-instance2-img
-    container_name: springboot-microservice-dispute-instance2-api
-    ports:
-      - "8017:8080"
     networks:
       - mysqlnetwork
 
