@@ -7,6 +7,8 @@ import com.ntou.exceptions.TException;
 import com.ntou.sysintegrat.mailserver.JavaMail;
 import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
+import com.ntou.tool.DateTool;
+import com.ntou.tool.ExecutionTimer;
 import com.ntou.tool.ResTool;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -18,15 +20,19 @@ public class Activation {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
 
     public ResponseEntity<ActivationRes> doAPI(ActivationReq req,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
-        log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
+        ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+
+		log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         ActivationRes res = new ActivationRes();
 
          if(!req.checkReq())
              ResTool.regularThrow(res, ActivationRC.T131A.getCode(), ActivationRC.T131A.getContent(), req.getErrMsg());
-
+		
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
         CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
         String resCode = dbApiSenderCuscredit.updateActivationRecord(okHttpServiceClient,voCuscreditUpdate(req));
+        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 
         MailVO vo = new MailVO();
         if(!resCode.equals("UpdateActivationRecord00")) {
@@ -46,7 +52,10 @@ public class Activation {
 
         log.info(Common.RES + res);
         log.info(Common.API_DIVIDER + Common.END_B + Common.API_DIVIDER);
-        return ResponseEntity.status(HttpStatus.OK).body(res);
+        
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+        ExecutionTimer.exportTimings(this.getClass().getSimpleName() + "_" + DateTool.getYYYYmmDDhhMMss() + ".txt");
+		return ResponseEntity.status(HttpStatus.OK).body(res);
     }
     private CuscreditVO voCuscreditUpdate(ActivationReq req){
         CuscreditVO vo = new CuscreditVO();

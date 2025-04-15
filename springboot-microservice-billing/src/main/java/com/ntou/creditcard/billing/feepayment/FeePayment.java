@@ -9,6 +9,7 @@ import com.ntou.sysintegrat.mailserver.JavaMail;
 import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
 import com.ntou.tool.DateTool;
+import com.ntou.tool.ExecutionTimer;
 import com.ntou.tool.ResTool;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -22,13 +23,16 @@ public class FeePayment {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
 
     public ResponseEntity<FeePaymentRes> doAPI(FeePaymentReq req, DbApiSenderBillofmonth dbApiSenderBillofmonth,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
-        log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+		
+		log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         FeePaymentRes res = new FeePaymentRes();
 
         if(!req.checkReq())
             ResTool.regularThrow(res, FeePaymentRC.T171A.getCode(), FeePaymentRC.T171A.getContent(), req.getErrMsg());
-
+		
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
         BillofmonthVO vo = setUpdatePayDate(req);
 //        ArrayList<BillofmonthVO> listBillofmonth = billofmonthSvc.findBills(vo);
         List<BillofmonthVO> listBillofmonth = dbApiSenderBillofmonth.findCusBill(okHttpServiceClient, vo);
@@ -43,12 +47,16 @@ public class FeePayment {
             sendMail(req, listBillofmonth.get(0),dbApiSenderCuscredit);
         } else
             ResTool.commonThrow(res, FeePaymentRC.T171D.getCode(), FeePaymentRC.T171D.getContent());
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 
         ResTool.setRes(res, FeePaymentRC.T1710.getCode(), FeePaymentRC.T1710.getContent());
 
         log.info(Common.RES + res);
         log.info(Common.API_DIVIDER + Common.END_B + Common.API_DIVIDER);
-        return ResponseEntity.status(HttpStatus.CREATED).body(res);
+        
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+        ExecutionTimer.exportTimings(this.getClass().getSimpleName() + "_" + DateTool.getYYYYmmDDhhMMss() + ".txt");
+		return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
     private void sendMail(FeePaymentReq req, BillofmonthVO key,DbApiSenderCuscredit dbApiSenderCuscredit) throws Exception {
         MailVO vo = new MailVO();
